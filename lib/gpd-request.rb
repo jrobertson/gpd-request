@@ -18,7 +18,7 @@ class GPDRequest
     path = uri
     url = URI.parse(path)
     req = yield(url)
-    req.basic_auth(@username, @password) if @user
+    req.basic_auth(@username, @password) if @username
     response = Net::HTTP.new(url.host, url.port).start do |http| 
       http.request(req) 
     end
