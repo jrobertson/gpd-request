@@ -26,7 +26,12 @@ class GPDRequest
   end
   
   def get(uri)
-    request(uri) {|url| Net::HTTP::Get.new url.path, @headers }
+    
+    if uri =~ /^http:/ then
+      request(uri) {|url| Net::HTTP::Get.new url.path, @headers }
+    elsif uri =~ /^https:/
+      Net::HTTP.get_response(URI.parse(uri))
+    end
   end
 
   def post(uri, form_data={})
