@@ -25,16 +25,28 @@ class GPDRequest
     response
   end
   
-  def get(uri)
+  def get(uri, params={})
     
     if uri =~ /^http:/ then
-      request(uri) {|url| Net::HTTP::Get.new url.path, @headers }
+      
+      request(uri) do |url| 
+        
+        if params.any? then
+          
+          encoded_params = URI.encode_www_form(params)
+          Net::HTTP::Get.new [url.path, encoded_params].join('?'), @headers
+          
+        else
+          Net::HTTP::Get.new url.path, @headers
+        end
+      end
     elsif uri =~ /^https:/
       Net::HTTP.get_response(URI.parse(uri))
     end
   end
 
   def post(uri, form_data={})
+
     request(uri) do |url| 
       req = Net::HTTP::Post.new(url.path, @headers)
       req.set_form_data form_data unless form_data.empty?
